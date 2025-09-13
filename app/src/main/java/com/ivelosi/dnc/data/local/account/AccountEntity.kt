@@ -1,0 +1,13 @@
+package com.ivelosi.dnc.data.local.account
+
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+import kotlinx.serialization.Serializable
+
+@Serializable
+@Entity
+data class AccountEntity(
+    @PrimaryKey
+    val accountId: Long,
+    val profileUpdateTimestamp: Long
+)
