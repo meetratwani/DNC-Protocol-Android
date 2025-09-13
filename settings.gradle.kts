@@ -13,5 +13,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "FlyDrop2p"
+rootProject.name = "DNC Protocol"
 include(":app")

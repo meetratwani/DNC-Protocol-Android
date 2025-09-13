@@ -8,11 +8,11 @@ plugins {
 }
 
 android {
-    namespace = "com.flydrop2p.flydrop2p"
+    namespace = "com.ivelosi.dnc"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.flydrop2p.flydrop2p"
+        applicationId = "com.ivelosi.dnc"
         minSdk = 24
         targetSdk = 34
         versionCode = 1
