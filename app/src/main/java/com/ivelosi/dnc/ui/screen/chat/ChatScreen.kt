@@ -17,6 +17,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -26,11 +27,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import androidx.navigation.NavHostController
 import com.ivelosi.dnc.R
 import com.ivelosi.dnc.domain.model.message.AudioMessage
@@ -40,6 +44,7 @@ import com.ivelosi.dnc.domain.model.message.TextMessage
 import com.ivelosi.dnc.ui.ChatTopAppBar
 import com.ivelosi.dnc.ui.components.AudioMessageComponent
 import com.ivelosi.dnc.ui.components.AudioRecordingControls
+import com.ivelosi.dnc.ui.components.CallNotificationManager
 import com.ivelosi.dnc.ui.components.FileMessageComponent
 import com.ivelosi.dnc.ui.components.FileMessageInput
 import com.ivelosi.dnc.ui.components.TextMessageComponent
@@ -67,6 +72,9 @@ fun ChatScreen(
     onInfoButtonClick: (Long) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val context = LocalContext.current
+    val notificationManager = remember { CallNotificationManager(context) }
+
     val callRequest by chatViewModel.networkManager.callRequest.collectAsState()
 
     LaunchedEffect(callRequest) {
@@ -79,6 +87,61 @@ fun ChatScreen(
     val chatState by chatViewModel.uiState.collectAsState()
 
     chatViewModel.updateMessagesState(chatState.messages)
+
+    // Track if chat screen is visible
+    val lifecycleOwner = LocalLifecycleOwner.current
+    var isChatVisible by remember { mutableStateOf(true) }
+
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            isChatVisible = when (event) {
+                Lifecycle.Event.ON_RESUME -> {
+                    // Clear notifications when chat is opened
+                    notificationManager.cancelChatNotification(Nid)
+                    true
+                }
+                Lifecycle.Event.ON_PAUSE -> false
+                else -> isChatVisible
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+        }
+    }
+
+    // Listen for new messages and show notifications if chat is not visible
+    LaunchedEffect(chatState.messages.size) {
+        if (!isChatVisible && chatState.messages.isNotEmpty()) {
+            val lastMessage = chatState.messages.lastOrNull()
+            currentAccount?.let { account ->
+                // Only show notification for messages from the other person
+                val messageSenderId = when (lastMessage) {
+                    is TextMessage -> lastMessage.senderId
+                    is FileMessage -> lastMessage.senderId
+                    is AudioMessage -> lastMessage.senderId
+                    else -> null
+                }
+
+                if (messageSenderId != null && messageSenderId != account.Nid) {
+                    val messageText = when (lastMessage) {
+                        is TextMessage -> lastMessage.text
+                        is FileMessage -> "Sent a file"
+                        is AudioMessage -> "Sent a voice message"
+                        else -> "New message"
+                    }
+
+                    notificationManager.showChatMessageNotification(
+                        contactName = chatState.contact.username ?: "Unknown",
+                        messageText = messageText,
+                        contactNid = Nid,
+                        activityClass = context::class.java
+                    )
+                }
+            }
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -156,7 +219,7 @@ fun MessagesList(
     ) {
         items(groupedMessages) { item ->
             when (item) {
-                is String -> DateSeparator(date = item) // Se è una data
+                is String -> DateSeparator(date = item)
                 is Message -> MessageItem(
                     message = item,
                     Nid = Nid,
