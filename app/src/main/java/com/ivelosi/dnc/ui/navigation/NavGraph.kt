@@ -56,23 +56,23 @@ fun NavHost(
             HomeScreen(
                 homeViewModel = homeViewModel,
                 navController = navController,
-                onChatClick = { navController.navigate("${ChatDestination.route}/${it.accountId}") },
+                onChatClick = { navController.navigate("${ChatDestination.route}/${it.Nid}") },
                 onSettingsButtonClick = { navController.navigate(SettingsDestination.route) },
             )
         }
 
         composable(
             route = ChatDestination.routeWithArgs,
-            arguments = listOf(navArgument(ChatDestination.accountIdArg) {
+            arguments = listOf(navArgument(ChatDestination.NidArg) {
                 type = NavType.LongType
             })
         ) { backStackEntry ->
-            val accountId = backStackEntry.arguments?.getLong(ChatDestination.accountIdArg)
-            accountId?.let {
-                val chatViewModel: ChatViewModel = viewModel(factory = ChatViewModelFactory(accountId))
+            val Nid = backStackEntry.arguments?.getLong(ChatDestination.NidArg)
+            Nid?.let {
+                val chatViewModel: ChatViewModel = viewModel(factory = ChatViewModelFactory(Nid))
 
                 ChatScreen(
-                    accountId = accountId,
+                    Nid = Nid,
                     chatViewModel = chatViewModel,
                     navController = navController,
                     onInfoButtonClick = { navController.navigate("${InfoDestination.route}/${it}") },
@@ -82,13 +82,13 @@ fun NavHost(
 
         composable(
             route = InfoDestination.routeWithArgs,
-            arguments = listOf(navArgument(InfoDestination.accountIdArg) {
+            arguments = listOf(navArgument(InfoDestination.NidArg) {
                 type = NavType.LongType
             })
         ){backStackEntry ->
-            val accountId = backStackEntry.arguments?.getLong(InfoDestination.accountIdArg)
-            accountId?.let {
-                val infoViewModel: InfoViewModel = viewModel(factory = InfoViewModelFactory(accountId))
+            val Nid = backStackEntry.arguments?.getLong(InfoDestination.NidArg)
+            Nid?.let {
+                val infoViewModel: InfoViewModel = viewModel(factory = InfoViewModelFactory(Nid))
 
                 InfoScreen(
                     infoViewModel,
@@ -99,19 +99,19 @@ fun NavHost(
 
         composable(
             route = CallDestination.routeWithArgs,
-            arguments = listOf(navArgument(CallDestination.accountIdArg) {
+            arguments = listOf(navArgument(CallDestination.NidArg) {
                 type = NavType.LongType
             })
         ) { backStackEntry ->
-            val accountId = backStackEntry.arguments?.getLong(CallDestination.accountIdArg)
+            val Nid = backStackEntry.arguments?.getLong(CallDestination.NidArg)
             val callState = backStackEntry.arguments?.getString(CallDestination.callStateArg)?.let { CallState.valueOf(it) }
 
-            if(accountId != null && callState != null) {
+            if(Nid != null && callState != null) {
                 BackHandler(true) {
 
                 }
 
-                val callViewModel: CallViewModel = viewModel(factory = CallViewModelFactory(accountId, callState))
+                val callViewModel: CallViewModel = viewModel(factory = CallViewModelFactory(Nid, callState))
 
                 CallScreen(
                     callViewModel = callViewModel,

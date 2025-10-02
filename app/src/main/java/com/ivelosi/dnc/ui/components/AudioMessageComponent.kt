@@ -37,7 +37,7 @@ import kotlinx.coroutines.delay
 @Composable
 fun AudioMessageComponent(
     message: AudioMessage,
-    currentAccountId: Long,
+    currentNid: Long,
     startPlayingAudio: (String, Int) -> Unit,
     stopPlayingAudio: () -> Unit,
     getCurrentPlaybackPosition: () -> Int,
@@ -66,13 +66,13 @@ fun AudioMessageComponent(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 2.dp, vertical = 4.dp),
-        horizontalArrangement = if (message.senderId == currentAccountId) Arrangement.End else Arrangement.Start
+        horizontalArrangement = if (message.senderId == currentNid) Arrangement.End else Arrangement.Start
     ) {
         Box(
             modifier = Modifier
                 .width(150.dp)
                 .clip(RoundedCornerShape(corner = CornerSize(16.dp)))
-                .background(if (message.senderId == currentAccountId) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant)
+                .background(if (message.senderId == currentNid) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant)
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -91,7 +91,7 @@ fun AudioMessageComponent(
                     modifier = Modifier
                         .size(45.dp)
                         .background(
-                            color = if (message.senderId != currentAccountId) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant,
+                            color = if (message.senderId != currentNid) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant,
                             shape = CircleShape
                         )
                         .padding(8.dp)
@@ -110,7 +110,7 @@ fun AudioMessageComponent(
             Text(
                 text = "${message.formatDuration(playbackPosition.intValue)} / $formattedDuration",
                 fontSize = 10.sp,
-                color = if (message.senderId == currentAccountId) MaterialTheme.colorScheme.surface else MaterialTheme.colorScheme.onSurface,
+                color = if (message.senderId == currentNid) MaterialTheme.colorScheme.surface else MaterialTheme.colorScheme.onSurface,
                 modifier = Modifier
                     .padding(horizontal = 8.dp, vertical = 4.dp)
                     .align(Alignment.TopEnd)
@@ -119,7 +119,7 @@ fun AudioMessageComponent(
 
             MessageStatusIndicator(
                 message = message,
-                currentAccountId = currentAccountId,
+                currentNid = currentNid,
                 backgroundColor = Color(0x00EFEFEF),
                 modifier = Modifier.align(Alignment.BottomEnd)
             )

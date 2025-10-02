@@ -13,14 +13,14 @@ interface ProfileDAO {
     @Query("SELECT * FROM ProfileEntity")
     fun getAllProfilesAsFlow(): Flow<List<ProfileEntity>>
 
-    @Query("SELECT * FROM ProfileEntity WHERE accountId = :accountId")
-    fun getProfileByAccountIdAsFlow(accountId: Long): Flow<ProfileEntity?>
+    @Query("SELECT * FROM ProfileEntity WHERE Nid = :Nid")
+    fun getProfileByNidAsFlow(Nid: Long): Flow<ProfileEntity?>
 
     @Query("SELECT * FROM ProfileEntity")
     fun getAllProfiles(): List<ProfileEntity>
 
-    @Query("SELECT * FROM ProfileEntity WHERE accountId = :accountId")
-    fun getProfileByAccountId(accountId: Long): ProfileEntity?
+    @Query("SELECT * FROM ProfileEntity WHERE Nid = :Nid")
+    fun getProfileByNid(Nid: Long): ProfileEntity?
 
     @Insert
     suspend fun insertProfile(profile: ProfileEntity): Long

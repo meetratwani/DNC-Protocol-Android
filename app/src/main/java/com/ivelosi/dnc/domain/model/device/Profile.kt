@@ -4,18 +4,18 @@ import com.ivelosi.dnc.data.local.profile.ProfileEntity
 import com.ivelosi.dnc.network.model.device.NetworkProfile
 
 data class Profile(
-    val accountId: Long,
+    val Nid: Long,
     val updateTimestamp: Long,
     val username: String,
     val imageFileName: String?
 ) {
     constructor(networkProfile: NetworkProfile, imageFileName: String?)
-        : this(networkProfile.accountId, networkProfile.updateTimestamp, networkProfile.username, imageFileName)
+        : this(networkProfile.Nid, networkProfile.updateTimestamp, networkProfile.username, imageFileName)
 }
 
 fun Profile.toProfileEntity(): ProfileEntity {
     return ProfileEntity(
-        accountId = accountId,
+        Nid = Nid,
         updateTimestamp = updateTimestamp,
         username = username,
         imageFileName = imageFileName
@@ -24,7 +24,7 @@ fun Profile.toProfileEntity(): ProfileEntity {
 
 fun ProfileEntity.toProfile(): Profile {
     return Profile(
-        accountId = accountId,
+        Nid = Nid,
         updateTimestamp = updateTimestamp,
         username = username,
         imageFileName = imageFileName

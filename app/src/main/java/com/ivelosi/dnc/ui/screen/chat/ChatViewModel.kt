@@ -25,7 +25,7 @@ class ChatViewModel(
     private val ownAccountRepository: OwnAccountRepository,
     private val fileManager: FileManager,
     val networkManager: NetworkManager,
-    private val accountId: Long
+    private val Nid: Long
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(ChatViewState())
     val uiState: StateFlow<ChatViewState> = _uiState.asStateFlow()
@@ -37,7 +37,7 @@ class ChatViewModel(
 
     init {
         viewModelScope.launch {
-            contactRepository.getContactByAccountIdAsFlow(accountId).collect { contact ->
+            contactRepository.getContactByNidAsFlow(Nid).collect { contact ->
                 if(contact != null) {
                     _uiState.value = _uiState.value.copy(contact = contact)
                 }
@@ -45,31 +45,31 @@ class ChatViewModel(
         }
 
         viewModelScope.launch {
-            chatRepository.getAllMessagesByAccountIdAsFlow(accountId).collect { messages ->
+            chatRepository.getAllMessagesByNidAsFlow(Nid).collect { messages ->
                 _uiState.value = _uiState.value.copy(messages = messages)
             }
         }
     }
 
     fun sendTextMessage(text: String) {
-        networkManager.sendTextMessage(accountId, text)
+        networkManager.sendTextMessage(Nid, text)
     }
 
     fun sendFileMessage(fileUri: Uri) {
-        networkManager.sendFileMessage(accountId, fileUri)
+        networkManager.sendFileMessage(Nid, fileUri)
     }
 
     fun sendAudioMessage() {
         audioReplayer.apply {
             if(isRecording) {
                 stopRecording()
-                recordingFile?.let { networkManager.sendAudioMessage(accountId, it) }
+                recordingFile?.let { networkManager.sendAudioMessage(Nid, it) }
             }
         }
     }
 
     fun sendCallRequest() {
-        networkManager.sendCallRequest(accountId)
+        networkManager.sendCallRequest(Nid)
     }
 
     fun startRecordingAudio() = audioReplayer.startRecording(fileManager.getAudioTempFile())
@@ -91,9 +91,9 @@ class ChatViewModel(
 
     fun updateMessagesState(messages: List<Message>) {
         viewModelScope.launch {
-            val ownAccountId = ownAccountRepository.getAccount().accountId
+            val ownNid = ownAccountRepository.getAccount().Nid
 
-            val receivedMessages = messages.filter { it.messageState < MessageState.MESSAGE_READ && it.senderId != ownAccountId }
+            val receivedMessages = messages.filter { it.messageState < MessageState.MESSAGE_READ && it.senderId != ownNid }
 
             receivedMessages.forEach { message ->
                 chatRepository.updateMessageState(message.messageId, MessageState.MESSAGE_READ)

@@ -26,17 +26,17 @@ class ContactLocalRepository(private val accountDAO: AccountDAO, private val pro
 
         return combine(accountsFlow, profilesFlow) { accounts, profiles ->
             accounts.map { account ->
-                Contact(account, profiles.find { it.accountId == account.accountId })
+                Contact(account, profiles.find { it.Nid == account.Nid })
             }
         }
     }
 
-    override fun getContactByAccountIdAsFlow(accountId: Long): Flow<Contact?> {
-        val accountFlow = accountDAO.getAccountByAccountIdAsFlow(accountId).map { accountEntity ->
+    override fun getContactByNidAsFlow(Nid: Long): Flow<Contact?> {
+        val accountFlow = accountDAO.getAccountByNidAsFlow(Nid).map { accountEntity ->
             accountEntity?.toAccount()
         }
 
-        val profileFlow = profileDAO.getProfileByAccountIdAsFlow(accountId).map { profileEntity ->
+        val profileFlow = profileDAO.getProfileByNidAsFlow(Nid).map { profileEntity ->
             profileEntity?.toProfile()
         }
 
@@ -55,16 +55,16 @@ class ContactLocalRepository(private val accountDAO: AccountDAO, private val pro
         }
     }
 
-    override fun getAccountByAccountIdAsFlow(accountId: Long): Flow<Account?> {
-        return accountDAO.getAccountByAccountIdAsFlow(accountId).map { it?.toAccount() }
+    override fun getAccountByNidAsFlow(Nid: Long): Flow<Account?> {
+        return accountDAO.getAccountByNidAsFlow(Nid).map { it?.toAccount() }
     }
 
     override suspend fun getAllAccounts(): List<Account> {
         return accountDAO.getAllAccounts().map { it.toAccount() }
     }
 
-    override suspend fun getAccountByAccountId(accountId: Long): Account? {
-        return accountDAO.getAccountByAccountId(accountId)?.toAccount()
+    override suspend fun getAccountByNid(Nid: Long): Account? {
+        return accountDAO.getAccountByNid(Nid)?.toAccount()
     }
 
     override suspend fun addAccount(account: Account): Long {
@@ -89,16 +89,16 @@ class ContactLocalRepository(private val accountDAO: AccountDAO, private val pro
         }
     }
 
-    override fun getProfileByAccountIdAsFlow(accountId: Long): Flow<Profile?> {
-        return profileDAO.getProfileByAccountIdAsFlow(accountId).map { it?.toProfile() }
+    override fun getProfileByNidAsFlow(Nid: Long): Flow<Profile?> {
+        return profileDAO.getProfileByNidAsFlow(Nid).map { it?.toProfile() }
     }
 
     override suspend fun getAllProfiles(): List<Profile> {
         return profileDAO.getAllProfiles().map { it.toProfile() }
     }
 
-    override suspend fun getProfileByAccountId(accountId: Long): Profile? {
-        return profileDAO.getProfileByAccountId(accountId)?.toProfile()
+    override suspend fun getProfileByNid(Nid: Long): Profile? {
+        return profileDAO.getProfileByNid(Nid)?.toProfile()
     }
 
     override suspend fun addProfile(profile: Profile): Long {

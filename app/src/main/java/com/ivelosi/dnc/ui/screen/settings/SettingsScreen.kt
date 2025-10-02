@@ -47,6 +47,7 @@ import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import com.ivelosi.dnc.R
+import com.ivelosi.dnc.data.local.NodeIdentity
 import com.ivelosi.dnc.ui.TopAppBar
 import com.ivelosi.dnc.ui.navigation.NavigationDestination
 import com.ivelosi.dnc.ui.screen.call.CallDestination
@@ -177,6 +178,14 @@ fun SettingsScreen(
                     text = settingsState.profile.username,
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold
+                )
+
+                Text(
+                    text = "Your NID is " + NodeIdentity.nid,
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White,
+                    modifier = Modifier.padding(8.dp)
                 )
 
                 TextField(

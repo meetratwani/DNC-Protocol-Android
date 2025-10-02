@@ -72,7 +72,7 @@ class SettingsViewModel(
         viewModelScope.launch {
             setLoading(true)
             try {
-                fileManager.saveProfileImage(profileImageUri, ownAccountRepository.getAccount().accountId)?.let { profileImageName ->
+                fileManager.saveProfileImage(profileImageUri, ownAccountRepository.getAccount().Nid)?.let { profileImageName ->
                     val currentTimestamp = System.currentTimeMillis()
                     ownProfileRepository.setImageFileName(profileImageName)
                     ownProfileRepository.setUpdateTimestamp(currentTimestamp)
@@ -93,7 +93,7 @@ class SettingsViewModel(
             try {
                 Log.d("SettingsViewModel", "Backup messages")
                 val messages = chatRepository.getAllMessages()
-                val body = BackupRequestBody(uiState.value.profile.accountId, messages)
+                val body = BackupRequestBody(uiState.value.profile.Nid, messages)
                 BackupApi.instance.backupMessages(body)
                 Log.d("SettingsViewModel", "Backup messages success")
 
@@ -110,7 +110,7 @@ class SettingsViewModel(
         viewModelScope.launch {
             setLoading(true)
             try {
-                val messages = BackupApi.instance.retrieveMessages(uiState.value.profile.accountId)
+                val messages = BackupApi.instance.retrieveMessages(uiState.value.profile.Nid)
 
                 messages.forEach { message ->
                     if(chatRepository.getMessageByMessageId(message.messageId) == null) {

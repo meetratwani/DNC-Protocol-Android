@@ -22,18 +22,18 @@ import androidx.compose.ui.unit.sp
 import com.ivelosi.dnc.domain.model.message.TextMessage
 
 @Composable
-fun TextMessageComponent(message: TextMessage, currentAccountId: Long) {
+fun TextMessageComponent(message: TextMessage, currentNid: Long) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 2.dp, vertical = 4.dp),
-        horizontalArrangement = if (message.senderId == currentAccountId) Arrangement.End else Arrangement.Start
+        horizontalArrangement = if (message.senderId == currentNid) Arrangement.End else Arrangement.Start
     ) {
         Box(
             modifier = Modifier
                 .widthIn(min = 100.dp, max = 300.dp)
                 .clip(RoundedCornerShape(corner = CornerSize(16.dp)))
-                .background(if (message.senderId == currentAccountId) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant)
+                .background(if (message.senderId == currentNid) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant)
         ) {
             Row (
                 horizontalArrangement = Arrangement.Start,
@@ -43,13 +43,13 @@ fun TextMessageComponent(message: TextMessage, currentAccountId: Long) {
                 Text(
                     text = message.text,
                     fontSize = 16.sp,
-                    color = if (message.senderId == currentAccountId) MaterialTheme.colorScheme.surface else MaterialTheme.colorScheme.onSurface,
+                    color = if (message.senderId == currentNid) MaterialTheme.colorScheme.surface else MaterialTheme.colorScheme.onSurface,
                 )
             }
 
             MessageStatusIndicator(
                 message = message,
-                currentAccountId = currentAccountId,
+                currentNid = currentNid,
                 backgroundColor = Color(0x00EFEFEF),
                 modifier = Modifier.align(Alignment.BottomEnd)
             )

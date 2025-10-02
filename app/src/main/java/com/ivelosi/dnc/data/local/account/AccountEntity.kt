@@ -8,6 +8,6 @@ import kotlinx.serialization.Serializable
 @Entity
 data class AccountEntity(
     @PrimaryKey
-    val accountId: Long,
+    val Nid: Long,
     val profileUpdateTimestamp: Long
 )

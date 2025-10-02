@@ -15,6 +15,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.lifecycle.lifecycleScope
+import com.ivelosi.dnc.data.local.NodeIdentity
 import com.ivelosi.dnc.domain.repository.OwnAccountRepository
 import com.ivelosi.dnc.domain.repository.OwnProfileRepository
 import com.ivelosi.dnc.network.BackupApi
@@ -22,6 +23,7 @@ import com.ivelosi.dnc.network.NetworkManager
 import com.ivelosi.dnc.ui.DNCProtocol
 import com.ivelosi.dnc.ui.DNCProtocol
 import com.ivelosi.dnc.ui.theme.Theme
+import com.ivelosi.dnc.utils.NidGenerator
 import kotlinx.coroutines.launch
 import kotlin.random.Random
 
@@ -32,6 +34,8 @@ class MainActivity : ComponentActivity() {
         addAction(WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION)
         addAction(WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION)
     }
+
+
 
     private lateinit var ownAccountRepository: OwnAccountRepository
     private lateinit var ownProfileRepository: OwnProfileRepository
@@ -50,11 +54,11 @@ class MainActivity : ComponentActivity() {
         networkManager = (application as App).container.networkManager
 
         lifecycleScope.launch {
-            if(ownAccountRepository.getAccount().accountId == 0L) {
-                val id = Build.MODEL.hashCode().toLong()
+            if(ownAccountRepository.getAccount().Nid == 0L) {
+                val id = NodeIdentity.nid
 
-                ownAccountRepository.setAccountId(id)
-                ownProfileRepository.setAccountId(id)
+                ownAccountRepository.setNid(id)
+                ownProfileRepository.setNid(id)
             }
 
             networkManager.startConnections()

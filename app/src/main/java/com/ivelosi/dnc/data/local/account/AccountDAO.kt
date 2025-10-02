@@ -13,14 +13,14 @@ interface AccountDAO {
     @Query("SELECT * FROM AccountEntity")
     fun getAllAccountsAsFlow(): Flow<List<AccountEntity>>
 
-    @Query("SELECT * FROM AccountEntity WHERE accountId = :accountId")
-    fun getAccountByAccountIdAsFlow(accountId: Long): Flow<AccountEntity?>
+    @Query("SELECT * FROM AccountEntity WHERE Nid = :Nid")
+    fun getAccountByNidAsFlow(Nid: Long): Flow<AccountEntity?>
 
     @Query("SELECT * FROM AccountEntity")
     fun getAllAccounts(): List<AccountEntity>
 
-    @Query("SELECT * FROM AccountEntity WHERE accountId = :accountId")
-    fun getAccountByAccountId(accountId: Long): AccountEntity?
+    @Query("SELECT * FROM AccountEntity WHERE Nid = :Nid")
+    fun getAccountByNid(Nid: Long): AccountEntity?
 
     @Insert
     suspend fun insertAccount(account: AccountEntity): Long

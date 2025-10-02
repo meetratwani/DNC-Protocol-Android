@@ -159,21 +159,21 @@ class NetworkManager(
         }
     }
 
-    fun sendProfileRequest(accountId: Long) {
-        val connectedDevice = connectedDevices.value.find { it.account.accountId == accountId }
+    fun sendProfileRequest(Nid: Long) {
+        val connectedDevice = connectedDevices.value.find { it.account.Nid == Nid }
 
         connectedDevice?.let { device ->
             device.ipAddress?.let { ipAddress ->
                 coroutineScope.launch {
-                    val networkProfileRequest = NetworkProfileRequest(ownDevice.account.accountId, accountId)
+                    val networkProfileRequest = NetworkProfileRequest(ownDevice.account.Nid, Nid)
                     clientService.sendProfileRequest(ipAddress, ownDevice, networkProfileRequest)
                 }
             }
         }
     }
 
-    fun sendProfileResponse(accountId: Long) {
-        val connectedDevice = connectedDevices.value.find { it.account.accountId == accountId }
+    fun sendProfileResponse(Nid: Long) {
+        val connectedDevice = connectedDevices.value.find { it.account.Nid == Nid }
 
         connectedDevice?.let { device ->
             device.ipAddress?.let { ipAddress ->
@@ -183,20 +183,20 @@ class NetworkManager(
                     }
 
                     val networkProfile = NetworkProfile(ownDevice.profile, imageBase64)
-                    val networkProfileResponse = NetworkProfileResponse(ownDevice.account.accountId, accountId, networkProfile)
+                    val networkProfileResponse = NetworkProfileResponse(ownDevice.account.Nid, Nid, networkProfile)
                     clientService.sendProfileResponse(ipAddress, ownDevice, networkProfileResponse)
                 }
             }
         }
     }
 
-    fun sendTextMessage(accountId: Long, text: String) {
-        val connectedDevice = connectedDevices.value.find { it.account.accountId == accountId }
+    fun sendTextMessage(Nid: Long, text: String) {
+        val connectedDevice = connectedDevices.value.find { it.account.Nid == Nid }
 
         connectedDevice?.let { device ->
             device.ipAddress?.let { ipAddress ->
                 coroutineScope.launch {
-                    var textMessage = TextMessage(0, ownDevice.account.accountId, accountId, System.currentTimeMillis(), MessageState.MESSAGE_SENT, text)
+                    var textMessage = TextMessage(0, ownDevice.account.Nid, Nid, System.currentTimeMillis(), MessageState.MESSAGE_SENT, text)
                     textMessage = textMessage.copy(messageId = chatRepository.addMessage(textMessage))
                     clientService.sendTextMessage(ipAddress, ownDevice, textMessage.toNetworkTextMessage())
                 }
@@ -204,14 +204,14 @@ class NetworkManager(
         }
     }
 
-    fun sendFileMessage(accountId: Long, fileUri: Uri) {
-        val connectedDevice = connectedDevices.value.find { it.account.accountId == accountId }
+    fun sendFileMessage(Nid: Long, fileUri: Uri) {
+        val connectedDevice = connectedDevices.value.find { it.account.Nid == Nid }
 
         connectedDevice?.let { device ->
             device.ipAddress?.let { ipAddress ->
                 coroutineScope.launch {
                     fileManager.saveMessageFile(fileUri)?.let { fileName ->
-                        var fileMessage = FileMessage(0, ownDevice.account.accountId, accountId, System.currentTimeMillis(), MessageState.MESSAGE_SENT, fileName)
+                        var fileMessage = FileMessage(0, ownDevice.account.Nid, Nid, System.currentTimeMillis(), MessageState.MESSAGE_SENT, fileName)
                         fileMessage = fileMessage.copy(messageId = chatRepository.addMessage(fileMessage))
 
                         fileManager.getFileBase64(fileName)?.let { fileBase64 ->
@@ -224,16 +224,16 @@ class NetworkManager(
         }
     }
 
-    fun sendAudioMessage(accountId: Long, file: File) {
-        val connectedDevice = connectedDevices.value.find { it.account.accountId == accountId }
+    fun sendAudioMessage(Nid: Long, file: File) {
+        val connectedDevice = connectedDevices.value.find { it.account.Nid == Nid }
 
         connectedDevice?.let { device ->
             device.ipAddress?.let { ipAddress ->
                 coroutineScope.launch {
                     val currentTimestamp = System.currentTimeMillis()
 
-                    fileManager.saveMessageAudio(Uri.fromFile(file), accountId, currentTimestamp)?.let { fileName ->
-                        var audioMessage = AudioMessage(0, ownDevice.account.accountId, accountId, currentTimestamp, MessageState.MESSAGE_SENT, fileName)
+                    fileManager.saveMessageAudio(Uri.fromFile(file), Nid, currentTimestamp)?.let { fileName ->
+                        var audioMessage = AudioMessage(0, ownDevice.account.Nid, Nid, currentTimestamp, MessageState.MESSAGE_SENT, fileName)
                         audioMessage = audioMessage.copy(messageId = chatRepository.addMessage(audioMessage))
 
                         fileManager.getFileBase64(fileName)?.let { audioBase64 ->
@@ -245,73 +245,73 @@ class NetworkManager(
         }
     }
 
-    fun sendMessageReceivedAck(accountId: Long, messageId: Long) {
-        val connectedDevice = connectedDevices.value.find { it.account.accountId == accountId }
+    fun sendMessageReceivedAck(Nid: Long, messageId: Long) {
+        val connectedDevice = connectedDevices.value.find { it.account.Nid == Nid }
 
         connectedDevice?.let { device ->
             device.ipAddress?.let { ipAddress ->
                 coroutineScope.launch {
-                    val networkMessageAck = NetworkMessageAck(messageId, ownDevice.account.accountId, accountId)
+                    val networkMessageAck = NetworkMessageAck(messageId, ownDevice.account.Nid, Nid)
                     clientService.sendMessageReceivedAck(ipAddress, ownDevice, networkMessageAck)
                 }
             }
         }
     }
 
-    fun sendMessageReadAck(accountId: Long, messageId: Long) {
-        val connectedDevice = connectedDevices.value.find { it.account.accountId == accountId }
+    fun sendMessageReadAck(Nid: Long, messageId: Long) {
+        val connectedDevice = connectedDevices.value.find { it.account.Nid == Nid }
 
         connectedDevice?.let { device ->
             device.ipAddress?.let { ipAddress ->
                 coroutineScope.launch {
-                    val networkMessageAck = NetworkMessageAck(messageId, ownDevice.account.accountId, accountId)
+                    val networkMessageAck = NetworkMessageAck(messageId, ownDevice.account.Nid, Nid)
                     clientService.sendMessageReadAck(ipAddress, ownDevice, networkMessageAck)
                 }
             }
         }
     }
 
-    fun sendCallRequest(accountId: Long) {
-        val connectedDevice = connectedDevices.value.find { it.account.accountId == accountId }
+    fun sendCallRequest(Nid: Long) {
+        val connectedDevice = connectedDevices.value.find { it.account.Nid == Nid }
 
         connectedDevice?.let { device ->
             device.ipAddress?.let { ipAddress ->
                 coroutineScope.launch {
-                    val networkCallRequest = NetworkCallRequest(ownDevice.account.accountId, accountId)
+                    val networkCallRequest = NetworkCallRequest(ownDevice.account.Nid, Nid)
                     clientService.sendCallRequest(ipAddress, ownDevice, networkCallRequest)
                 }
             }
         }
     }
 
-    fun sendCallResponse(accountId: Long, accepted: Boolean) {
-        val connectedDevice = connectedDevices.value.find { it.account.accountId == accountId }
+    fun sendCallResponse(Nid: Long, accepted: Boolean) {
+        val connectedDevice = connectedDevices.value.find { it.account.Nid == Nid }
 
         connectedDevice?.let { device ->
             device.ipAddress?.let { ipAddress ->
                 coroutineScope.launch {
-                    val networkCallResponse = NetworkCallResponse(ownDevice.account.accountId, accountId, accepted)
+                    val networkCallResponse = NetworkCallResponse(ownDevice.account.Nid, Nid, accepted)
                     clientService.sendCallResponse(ipAddress, ownDevice, networkCallResponse)
                 }
             }
         }
     }
 
-    fun sendCallEnd(accountId: Long) {
-        val connectedDevice = connectedDevices.value.find { it.account.accountId == accountId }
+    fun sendCallEnd(Nid: Long) {
+        val connectedDevice = connectedDevices.value.find { it.account.Nid == Nid }
 
         connectedDevice?.let { device ->
             device.ipAddress?.let { ipAddress ->
                 coroutineScope.launch {
-                    val networkCallEnd = NetworkCallEnd(ownDevice.account.accountId, accountId)
+                    val networkCallEnd = NetworkCallEnd(ownDevice.account.Nid, Nid)
                     clientService.sendCallEnd(ipAddress, ownDevice, networkCallEnd)
                 }
             }
         }
     }
 
-    fun sendCallFragment(accountId: Long, callFragment: ByteArray) {
-        val connectedDevice = connectedDevices.value.find { it.account.accountId == accountId }
+    fun sendCallFragment(Nid: Long, callFragment: ByteArray) {
+        val connectedDevice = connectedDevices.value.find { it.account.Nid == Nid }
 
         connectedDevice?.let { device ->
             device.ipAddress?.let { ipAddress ->
@@ -343,7 +343,7 @@ class NetworkManager(
                 val networkKeepalive = serverService.listenKeepalive()
 
                 networkKeepalive?.networkDevices?.forEach { networkDevice ->
-                    if(networkDevice.account.accountId != ownDevice.account.accountId) {
+                    if(networkDevice.account.Nid != ownDevice.account.Nid) {
                         handleDeviceKeepalive(networkDevice)
                     }
                 }
@@ -356,7 +356,7 @@ class NetworkManager(
             while(true) {
                 val networkProfileRequest = serverService.listenProfileRequest()
 
-                if(networkProfileRequest?.receiverId == ownDevice.account.accountId) {
+                if(networkProfileRequest?.receiverId == ownDevice.account.Nid) {
                     handleProfileRequest(networkProfileRequest)
                 }
             }
@@ -368,7 +368,7 @@ class NetworkManager(
             while(true) {
                 val networkProfileResponse = serverService.listenProfileResponse()
 
-                if(networkProfileResponse?.receiverId == ownDevice.account.accountId) {
+                if(networkProfileResponse?.receiverId == ownDevice.account.Nid) {
                     handleProfileResponse(networkProfileResponse)
                 }
             }
@@ -380,7 +380,7 @@ class NetworkManager(
             while(true) {
                 val networkTextMessage = serverService.listenTextMessage()
 
-                if(networkTextMessage?.receiverId == ownDevice.account.accountId) {
+                if(networkTextMessage?.receiverId == ownDevice.account.Nid) {
                     handleTextMessage(networkTextMessage)
                 }
             }
@@ -392,7 +392,7 @@ class NetworkManager(
             while(true) {
                 val networkFileMessage = serverService.listenFileMessage()
 
-                if(networkFileMessage?.receiverId == ownDevice.account.accountId) {
+                if(networkFileMessage?.receiverId == ownDevice.account.Nid) {
                     handleFileMessage(networkFileMessage)
                 }
             }
@@ -404,7 +404,7 @@ class NetworkManager(
             while(true) {
                 val networkAudioMessage = serverService.listenAudioMessage()
 
-                if(networkAudioMessage?.receiverId == ownDevice.account.accountId) {
+                if(networkAudioMessage?.receiverId == ownDevice.account.Nid) {
                     handleAudioMessage(networkAudioMessage)
                 }
             }
@@ -416,7 +416,7 @@ class NetworkManager(
             while(true) {
                 val networkMessageAck = serverService.listenMessageReceivedAck()
 
-                if(networkMessageAck?.receiverId == ownDevice.account.accountId) {
+                if(networkMessageAck?.receiverId == ownDevice.account.Nid) {
                     handleMessageReceivedAck(networkMessageAck)
                 }
             }
@@ -428,7 +428,7 @@ class NetworkManager(
             while(true) {
                 val networkMessageAck = serverService.listenMessageReadAck()
 
-                if(networkMessageAck?.receiverId == ownDevice.account.accountId) {
+                if(networkMessageAck?.receiverId == ownDevice.account.Nid) {
                     handleMessageReadAck(networkMessageAck)
                 }
             }
@@ -440,7 +440,7 @@ class NetworkManager(
             while(true) {
                 val networkCallRequest = serverService.listenCallRequest()
 
-                if(networkCallRequest?.receiverId == ownDevice.account.accountId) {
+                if(networkCallRequest?.receiverId == ownDevice.account.Nid) {
                     handleCallRequest(networkCallRequest)
                 }
             }
@@ -452,7 +452,7 @@ class NetworkManager(
             while(true) {
                 val networkCallResponse = serverService.listenCallResponse()
 
-                if(networkCallResponse?.receiverId == ownDevice.account.accountId) {
+                if(networkCallResponse?.receiverId == ownDevice.account.Nid) {
                     handleCallResponse(networkCallResponse)
                 }
             }
@@ -465,7 +465,7 @@ class NetworkManager(
             while(true) {
                 val networkCallEnd = serverService.listenCallEnd()
 
-                if(networkCallEnd?.receiverId == ownDevice.account.accountId) {
+                if(networkCallEnd?.receiverId == ownDevice.account.Nid) {
                     handleCallEnd(networkCallEnd)
                 }
             }
@@ -485,16 +485,16 @@ class NetworkManager(
 
     private fun handleDeviceKeepalive(networkDevice: NetworkDevice) {
         coroutineScope.launch {
-            val lastAccount = contactRepository.getAccountByAccountId(networkDevice.account.accountId)
+            val lastAccount = contactRepository.getAccountByNid(networkDevice.account.Nid)
             contactRepository.addOrUpdateAccount(networkDevice.account.toAccount())
 
-            val profile = contactRepository.getProfileByAccountId(networkDevice.account.accountId)
+            val profile = contactRepository.getProfileByNid(networkDevice.account.Nid)
 
             if(profile == null || (lastAccount != null && lastAccount.profileUpdateTimestamp < networkDevice.account.profileUpdateTimestamp)) {
-                sendProfileRequest(networkDevice.account.accountId)
+                sendProfileRequest(networkDevice.account.Nid)
             }
 
-            _connectedDevices.value = _connectedDevices.value.filter { it.account.accountId != networkDevice.account.accountId } + networkDevice
+            _connectedDevices.value = _connectedDevices.value.filter { it.account.Nid != networkDevice.account.Nid } + networkDevice
         }
     }
 
@@ -551,7 +551,7 @@ class NetworkManager(
 
     private fun handleMessageReadAck(networkMessageAck: NetworkMessageAck) {
         coroutineScope.launch {
-            chatRepository.getAllMessagesByReceiverAccountId(networkMessageAck.senderId).forEach { message ->
+            chatRepository.getAllMessagesByReceiverNid(networkMessageAck.senderId).forEach { message ->
                 if(message.messageState < MessageState.MESSAGE_READ) {
                     chatRepository.updateMessageState(message.messageId, MessageState.MESSAGE_READ)
                 }

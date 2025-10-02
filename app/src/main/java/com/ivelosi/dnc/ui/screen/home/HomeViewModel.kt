@@ -25,7 +25,7 @@ class HomeViewModel(
 
         viewModelScope.launch {
             networkManager.connectedDevices.collect { device ->
-                _uiState.value = _uiState.value.copy(onlineChats = device.map { it.account.accountId }.toSet())
+                _uiState.value = _uiState.value.copy(onlineChats = device.map { it.account.Nid }.toSet())
             }
         }
     }

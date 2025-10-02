@@ -72,13 +72,13 @@ class FileManager(private val context: Context) {
         }
     }
 
-    fun saveProfileImage(imageUri: Uri, accountId: Long): String? {
-        return saveFile(imageUri, "profile_image_${accountId}.jpg")
+    fun saveProfileImage(imageUri: Uri, Nid: Long): String? {
+        return saveFile(imageUri, "profile_image_${Nid}.jpg")
     }
 
     fun saveNetworkProfileImage(networkProfile: NetworkProfile): String? {
         networkProfile.apply {
-            return imageBase64?.let { saveFile(it, "profile_image_${accountId}.jpg") }
+            return imageBase64?.let { saveFile(it, "profile_image_${Nid}.jpg") }
         }
     }
 

@@ -29,28 +29,28 @@ class ChatLocalRepository(private val accountDAO: AccountDAO, private val messag
         return combine(accountsFlow, profilesFlow) { accounts, profiles ->
             accounts.map { account ->
                 ChatPreview(
-                    Contact(account, profiles.find { it.accountId == account.accountId }),
-                    messageDAO.getCountOfUnreadMessagesByAccountId(account.accountId).toInt(),
-                    messageDAO.getLastMessageByAccountId(account.accountId)?.toMessage()
+                    Contact(account, profiles.find { it.Nid == account.Nid }),
+                    messageDAO.getCountOfUnreadMessagesByNid(account.Nid).toInt(),
+                    messageDAO.getLastMessageByNid(account.Nid)?.toMessage()
                 )
             }.sorted().reversed()
         }
     }
 
-    override fun getAllMessagesByAccountIdAsFlow(accountId: Long): Flow<List<Message>> {
-        return messageDAO.getAllMessagesByAccountId(accountId).map { messageEntities ->
+    override fun getAllMessagesByNidAsFlow(Nid: Long): Flow<List<Message>> {
+        return messageDAO.getAllMessagesByNid(Nid).map { messageEntities ->
             messageEntities.map { it.toMessage() }
         }
     }
 
-    override fun getAllMediaMessagesByAccountIdAsFlow(accountId: Long): Flow<List<Message>> {
-        return messageDAO.getAllMediaMessagesByAccountId(accountId).map { messageEntities ->
+    override fun getAllMediaMessagesByNidAsFlow(Nid: Long): Flow<List<Message>> {
+        return messageDAO.getAllMediaMessagesByNid(Nid).map { messageEntities ->
             messageEntities.map { it.toMessage() }
         }
     }
 
-    override fun getAllMessagesByReceiverAccountId(accountId: Long): List<Message> {
-        return messageDAO.getMessagesByReceiverAccountId(accountId).map { it.toMessage() }
+    override fun getAllMessagesByReceiverNid(Nid: Long): List<Message> {
+        return messageDAO.getMessagesByReceiverNid(Nid).map { it.toMessage() }
     }
 
     override suspend fun getAllMessages(): List<MessageEntity> {

@@ -9,23 +9,23 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface MessageDAO {
-    @Query("SELECT * FROM MessageEntity WHERE (senderId = :accountId OR receiverId = :accountId) ORDER BY timestamp ASC")
-    fun getAllMessagesByAccountId(accountId: Long): Flow<List<MessageEntity>>
+    @Query("SELECT * FROM MessageEntity WHERE (senderId = :Nid OR receiverId = :Nid) ORDER BY timestamp ASC")
+    fun getAllMessagesByNid(Nid: Long): Flow<List<MessageEntity>>
 
-    @Query("SELECT * FROM MessageEntity WHERE receiverId = :accountId ORDER BY timestamp ASC")
-    fun getMessagesByReceiverAccountId(accountId: Long): List<MessageEntity>
+    @Query("SELECT * FROM MessageEntity WHERE receiverId = :Nid ORDER BY timestamp ASC")
+    fun getMessagesByReceiverNid(Nid: Long): List<MessageEntity>
 
-    @Query("SELECT * FROM MessageEntity WHERE (senderId = :accountId OR receiverId = :accountId) AND messageType = 'FILE_MESSAGE' ORDER BY timestamp ASC")
-    fun getAllMediaMessagesByAccountId(accountId: Long): Flow<List<MessageEntity>>
+    @Query("SELECT * FROM MessageEntity WHERE (senderId = :Nid OR receiverId = :Nid) AND messageType = 'FILE_MESSAGE' ORDER BY timestamp ASC")
+    fun getAllMediaMessagesByNid(Nid: Long): Flow<List<MessageEntity>>
 
     @Query("SELECT * FROM MessageEntity")
     suspend fun getAllMessages(): List<MessageEntity>
 
-    @Query("SELECT COUNT(*) FROM MessageEntity WHERE senderId = :accountId AND messageState = 'MESSAGE_RECEIVED'")
-    suspend fun getCountOfUnreadMessagesByAccountId(accountId: Long): Long
+    @Query("SELECT COUNT(*) FROM MessageEntity WHERE senderId = :Nid AND messageState = 'MESSAGE_RECEIVED'")
+    suspend fun getCountOfUnreadMessagesByNid(Nid: Long): Long
 
-    @Query("SELECT * FROM MessageEntity WHERE (senderId = :accountId OR receiverId = :accountId) ORDER BY timestamp DESC LIMIT 1")
-    suspend fun getLastMessageByAccountId(accountId: Long): MessageEntity?
+    @Query("SELECT * FROM MessageEntity WHERE (senderId = :Nid OR receiverId = :Nid) ORDER BY timestamp DESC LIMIT 1")
+    suspend fun getLastMessageByNid(Nid: Long): MessageEntity?
 
     @Query("SELECT * FROM MessageEntity WHERE messageId = :messageId")
     suspend fun getMessageByMessageId(messageId: Long): MessageEntity?

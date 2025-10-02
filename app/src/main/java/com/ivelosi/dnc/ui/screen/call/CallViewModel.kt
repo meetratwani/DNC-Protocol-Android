@@ -17,7 +17,7 @@ class CallViewModel(
     private val contactRepository: ContactRepository,
     private val callManager: CallManager,
     val networkManager: NetworkManager,
-    private val accountId: Long,
+    private val Nid: Long,
     callState: CallState
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(CallViewState(callState))
@@ -27,7 +27,7 @@ class CallViewModel(
 
     init {
         viewModelScope.launch {
-            contactRepository.getContactByAccountIdAsFlow(accountId).collect { contact ->
+            contactRepository.getContactByNidAsFlow(Nid).collect { contact ->
                 if (contact != null) {
                     _uiState.value = _uiState.value.copy(contact = contact)
                 }
@@ -44,17 +44,17 @@ class CallViewModel(
     }
 
     fun sendCallEnd() {
-        networkManager.sendCallEnd(accountId)
+        networkManager.sendCallEnd(Nid)
     }
 
     fun acceptCall() {
         networkManager.resetCallStateFlows()
-        networkManager.sendCallResponse(accountId, true)
+        networkManager.sendCallResponse(Nid, true)
     }
 
     fun declineCall() {
         networkManager.resetCallStateFlows()
-        networkManager.sendCallResponse(accountId, false)
+        networkManager.sendCallResponse(Nid, false)
     }
 
     fun startCall() {
@@ -72,7 +72,7 @@ class CallViewModel(
             try {
                 callManager.startPlaying()
                 callManager.startRecording { audioBytes ->
-                    networkManager.sendCallFragment(accountId, audioBytes)
+                    networkManager.sendCallFragment(Nid, audioBytes)
                 }
 
                 _uiState.value = _uiState.value.copy(callState = CallState.CALL)

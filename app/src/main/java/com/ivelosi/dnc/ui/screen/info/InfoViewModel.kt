@@ -15,7 +15,7 @@ class InfoViewModel(
     private val chatRepository: ChatRepository,
     private val contactRepository: ContactRepository,
     val networkManager: NetworkManager,
-    private val accountId: Long
+    private val Nid: Long
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(InfoViewState())
@@ -23,7 +23,7 @@ class InfoViewModel(
 
     init {
         viewModelScope.launch {
-            contactRepository.getContactByAccountIdAsFlow(accountId).collect { contact ->
+            contactRepository.getContactByNidAsFlow(Nid).collect { contact ->
                 if(contact?.profile != null) {
                     _uiState.value = contact.profile.let { _uiState.value.copy(profile = it) }
                 }
@@ -31,7 +31,7 @@ class InfoViewModel(
         }
 
         viewModelScope.launch {
-            chatRepository.getAllMediaMessagesByAccountIdAsFlow(accountId).collect { messages ->
+            chatRepository.getAllMediaMessagesByNidAsFlow(Nid).collect { messages ->
                 val mediaMessages = messages.filterIsInstance<FileMessage>()
                 _uiState.value = _uiState.value.copy(mediaMessages = mediaMessages)
             }

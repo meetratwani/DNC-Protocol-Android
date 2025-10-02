@@ -6,6 +6,6 @@ import kotlinx.coroutines.flow.Flow
 interface OwnAccountRepository {
     fun getAccountAsFlow(): Flow<Account>
     suspend fun getAccount(): Account
-    suspend fun setAccountId(accountId: Long)
+    suspend fun setNid(Nid: Long)
     suspend fun setProfileUpdateTimestamp(profileUpdateTimestamp: Long)
 }

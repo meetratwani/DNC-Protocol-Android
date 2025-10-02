@@ -55,13 +55,13 @@ import java.util.Locale
 object ChatDestination : NavigationDestination {
     override val route = "chat"
     override val titleRes = R.string.chat_screen
-    const val accountIdArg = "accountId"
-    val routeWithArgs = "$route/{$accountIdArg}"
+    const val NidArg = "Nid"
+    val routeWithArgs = "$route/{$NidArg}"
 }
 
 @Composable
 fun ChatScreen(
-    accountId: Long,
+    Nid: Long,
     chatViewModel: ChatViewModel,
     navController: NavHostController,
     onInfoButtonClick: (Long) -> Unit,
@@ -87,9 +87,9 @@ fun ChatScreen(
                 canNavigateBack = true,
                 onCallButtonClick = {
                     chatViewModel.sendCallRequest()
-                    navController.navigate("${CallDestination.route}/${accountId}/${CallState.SENT_CALL_REQUEST.name}")
+                    navController.navigate("${CallDestination.route}/${Nid}/${CallState.SENT_CALL_REQUEST.name}")
                 },
-                onInfoButtonClick = { onInfoButtonClick(accountId) },
+                onInfoButtonClick = { onInfoButtonClick(Nid) },
                 modifier = modifier,
                 navigateUp = { navController.navigateUp() },
                 contactImageFileName = chatState.contact.imageFileName
@@ -106,7 +106,7 @@ fun ChatScreen(
                 MessagesList(
                     messages = chatState.messages,
                     chatViewModel = chatViewModel,
-                    accountId = account.accountId,
+                    Nid = account.Nid,
                     modifier = Modifier.weight(1f)
                 )
 
@@ -137,7 +137,7 @@ fun ChatScreen(
 
 @Composable
 fun MessagesList(
-    messages: List<Message>, chatViewModel: ChatViewModel, accountId: Long, modifier: Modifier
+    messages: List<Message>, chatViewModel: ChatViewModel, Nid: Long, modifier: Modifier
 ) {
 
     val listState = rememberLazyListState()
@@ -159,7 +159,7 @@ fun MessagesList(
                 is String -> DateSeparator(date = item) // Se è una data
                 is Message -> MessageItem(
                     message = item,
-                    accountId = accountId,
+                    Nid = Nid,
                     chatViewModel = chatViewModel
                 )
             }
@@ -168,7 +168,7 @@ fun MessagesList(
 }
 
 @Composable
-fun MessageItem(message: Message, accountId: Long, chatViewModel: ChatViewModel) {
+fun MessageItem(message: Message, Nid: Long, chatViewModel: ChatViewModel) {
     val context = LocalContext.current
 
     Column(
@@ -176,17 +176,17 @@ fun MessageItem(message: Message, accountId: Long, chatViewModel: ChatViewModel)
     ) {
         when (message) {
             is TextMessage -> {
-                TextMessageComponent(message, currentAccountId = accountId)
+                TextMessageComponent(message, currentNid = Nid)
             }
 
             is FileMessage -> {
-                FileMessageComponent(message, currentAccountId = accountId)
+                FileMessageComponent(message, currentNid = Nid)
             }
 
             is AudioMessage -> {
                 AudioMessageComponent(
                     message,
-                    currentAccountId = accountId,
+                    currentNid = Nid,
                     startPlayingAudio = { fileName, startPosition ->
                         chatViewModel.startPlayingAudio(
                             File(context.filesDir, fileName),
@@ -236,7 +236,7 @@ fun SendMessageInput(
             .fillMaxWidth()
             .padding(top = 5.dp, bottom = 10.dp)
     ) {
-        /* BOTTONE ALLEGATI E FILE PREVIEW */
+
         if (!isTyping && !isRecording) {
             FileMessageInput(
                 fileUri = attachedFileUri,

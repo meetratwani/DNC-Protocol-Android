@@ -7,7 +7,7 @@ interface OwnProfileRepository {
     fun getProfileAsFlow(): Flow<Profile>
     suspend fun getProfile(): Profile
 
-    suspend fun setAccountId(accountId: Long)
+    suspend fun setNid(Nid: Long)
 
     suspend fun setUpdateTimestamp(updateTimestamp: Long)
 

@@ -115,7 +115,7 @@ fun ChatList(
         items(chatPreviews) { chatPreview ->
             ChatItem(
                 chatPreview = chatPreview,
-                online = onlineChats.contains(chatPreview.contact.accountId),
+                online = onlineChats.contains(chatPreview.contact.Nid),
                 onChatClick = onChatClick
             )
             HorizontalDivider(
@@ -329,9 +329,9 @@ fun ChatItemPreview() {
         chatPreview = ChatPreview(
             contact = Contact(
                 account = Account(
-                    accountId = 1, profileUpdateTimestamp = 1
+                    Nid = 1, profileUpdateTimestamp = 1
                 ), profile = Profile(
-                    accountId = 1, 0, username = "Alice", imageFileName = null
+                    Nid = 1, 0, username = "Alice", imageFileName = null
                 )
             ),
             unreadMessagesCount = 1,

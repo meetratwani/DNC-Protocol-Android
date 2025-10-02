@@ -57,7 +57,7 @@ import java.io.File
 @Composable
 fun ImageMessageComponent(
     message: FileMessage,
-    currentAccountId: Long
+    currentNid: Long
 ) {
     val context = LocalContext.current
 
@@ -67,7 +67,7 @@ fun ImageMessageComponent(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 2.dp, vertical = 4.dp),
-        horizontalArrangement = if (message.senderId == currentAccountId) Arrangement.End else Arrangement.Start
+        horizontalArrangement = if (message.senderId == currentNid) Arrangement.End else Arrangement.Start
     ) {
         Box(
             modifier = Modifier
@@ -90,7 +90,7 @@ fun ImageMessageComponent(
 
             MessageStatusIndicator(
                 message = message,
-                currentAccountId = currentAccountId,
+                currentNid = currentNid,
                 color = MaterialTheme.colorScheme.surface,
                 backgroundColor = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.align( Alignment.BottomEnd )
@@ -102,7 +102,7 @@ fun ImageMessageComponent(
 @Composable
 fun VideoMessageComponent(
     message: FileMessage,
-    currentAccountId: Long,
+    currentNid: Long,
     modifier: Modifier = Modifier,
     thumbnailHeight: Dp = 170.dp
 ) {
@@ -132,7 +132,7 @@ fun VideoMessageComponent(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 2.dp, vertical = 4.dp),
-        horizontalArrangement = if (message.senderId == currentAccountId) Arrangement.End else Arrangement.Start
+        horizontalArrangement = if (message.senderId == currentNid) Arrangement.End else Arrangement.Start
     ) {
         Box(
             modifier = Modifier
@@ -196,7 +196,7 @@ fun VideoMessageComponent(
 
             MessageStatusIndicator(
                 message = message,
-                currentAccountId = currentAccountId,
+                currentNid = currentNid,
                 color = MaterialTheme.colorScheme.surface,
                 backgroundColor = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.align(Alignment.BottomEnd)
@@ -208,7 +208,7 @@ fun VideoMessageComponent(
 @Composable
 fun PdfMessageComponent(
     message: FileMessage,
-    currentAccountId: Long
+    currentNid: Long
 ) {
     val context = LocalContext.current
 
@@ -218,10 +218,10 @@ fun PdfMessageComponent(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 2.dp, vertical = 4.dp),
-        horizontalArrangement = if (message.senderId == currentAccountId) Arrangement.End else Arrangement.Start
+        horizontalArrangement = if (message.senderId == currentNid) Arrangement.End else Arrangement.Start
     ) {
         Surface(
-            color = if (message.senderId == currentAccountId) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant,
+            color = if (message.senderId == currentNid) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant,
             modifier = Modifier
                 .widthIn(min = 150.dp, max = 300.dp)
                 .clip(RoundedCornerShape(corner = CornerSize(16.dp)))
@@ -237,12 +237,12 @@ fun PdfMessageComponent(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier.padding(top = 6.dp, start = 6.dp, end = 6.dp)
                 ){
-                    PdfPreview(fileUri, mine = message.senderId == currentAccountId)
+                    PdfPreview(fileUri, mine = message.senderId == currentNid)
                 }
 
                 MessageStatusIndicator(
                     message = message,
-                    currentAccountId = currentAccountId,
+                    currentNid = currentNid,
                     backgroundColor = Color(0x00EFEFEF),
                 )
             }
@@ -253,7 +253,7 @@ fun PdfMessageComponent(
 @Composable
 fun GenericFileMessageComponent(
     message: FileMessage,
-    currentAccountId: Long
+    currentNid: Long
 ){
     val context = LocalContext.current
 
@@ -261,10 +261,10 @@ fun GenericFileMessageComponent(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 2.dp, vertical = 4.dp),
-        horizontalArrangement = if (message.senderId == currentAccountId) Arrangement.End else Arrangement.Start
+        horizontalArrangement = if (message.senderId == currentNid) Arrangement.End else Arrangement.Start
     ) {
         Surface(
-            color = if (message.senderId == currentAccountId) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant,
+            color = if (message.senderId == currentNid) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant,
             modifier = Modifier
                 .widthIn(min = 150.dp, max = 300.dp)
                 .clip(RoundedCornerShape(corner = CornerSize(16.dp)))
@@ -292,7 +292,7 @@ fun GenericFileMessageComponent(
                         Text(
                             text = message.fileName,
                             fontSize = 16.sp,
-                            color = if (message.senderId == currentAccountId) MaterialTheme.colorScheme.surface else MaterialTheme.colorScheme.onSurface,
+                            color = if (message.senderId == currentNid) MaterialTheme.colorScheme.surface else MaterialTheme.colorScheme.onSurface,
                             fontWeight = FontWeight.Medium
                         )
                     }
@@ -300,7 +300,7 @@ fun GenericFileMessageComponent(
 
                 MessageStatusIndicator(
                     message = message,
-                    currentAccountId = currentAccountId,
+                    currentNid = currentNid,
                     backgroundColor = Color(0x00EFEFEF),
                 )
             }
@@ -311,29 +311,29 @@ fun GenericFileMessageComponent(
 @Composable
 fun FileMessageComponent(
     message: FileMessage,
-    currentAccountId: Long
+    currentNid: Long
 ) {
     val mimeType = getMimeType(message.fileName.substringAfterLast(".", ""))
 
     if (mimeType.startsWith("image/")) {
         ImageMessageComponent(
             message = message,
-            currentAccountId = currentAccountId
+            currentNid = currentNid
         )
     } else if (mimeType.startsWith("video/")) {
         VideoMessageComponent(
             message = message,
-            currentAccountId = currentAccountId
+            currentNid = currentNid
         )
     } else if (mimeType.startsWith("application/pdf")) {
         PdfMessageComponent(
             message = message,
-            currentAccountId = currentAccountId
+            currentNid = currentNid
         )
     } else {
         GenericFileMessageComponent(
             message = message,
-            currentAccountId = currentAccountId
+            currentNid = currentNid
         )
     }
 }
@@ -378,6 +378,6 @@ fun FileMessageComponentPreview() {
             messageState = MessageState.MESSAGE_RECEIVED,
             fileName = "example.jpg"
         ),
-        currentAccountId = 0
+        currentNid = 0
     )
 }

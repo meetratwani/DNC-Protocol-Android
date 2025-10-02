@@ -7,8 +7,8 @@ data class NetworkContact(
     val account: NetworkAccount,
     val profile: NetworkProfile?
 ) : Comparable<NetworkContact> {
-    val accountId: Long
-        get() = account.accountId
+    val Nid: Long
+        get() = account.Nid
 
     val profileUpdateTimestamp: Long
         get() = account.profileUpdateTimestamp

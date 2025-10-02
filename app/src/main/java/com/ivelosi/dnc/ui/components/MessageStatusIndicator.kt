@@ -31,9 +31,9 @@ import java.util.Locale
 @Composable
 fun MessageStatusIndicator(
     message: Message,
-    currentAccountId: Long,
+    currentNid: Long,
     modifier: Modifier = Modifier,
-    color: Color = if (message.senderId == currentAccountId) MaterialTheme.colorScheme.surface else MaterialTheme.colorScheme.onSurface,
+    color: Color = if (message.senderId == currentNid) MaterialTheme.colorScheme.surface else MaterialTheme.colorScheme.onSurface,
     backgroundColor: Color = Color(0xFFEFEFEF),
 ) {
     val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
@@ -57,7 +57,7 @@ fun MessageStatusIndicator(
                 color = color,
             )
 
-            if (message.senderId == currentAccountId) {
+            if (message.senderId == currentNid) {
                 Spacer(modifier = Modifier.width(4.dp))
 
                 when (message.messageState) {
@@ -97,6 +97,6 @@ fun MessageStatusIndicatorPreview() {
             messageState = MessageState.MESSAGE_READ,
             text = "Ciao!"
         ),
-        currentAccountId = 1
+        currentNid = 1
     )
 }

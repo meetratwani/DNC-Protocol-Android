@@ -9,11 +9,11 @@ import kotlinx.coroutines.flow.Flow
 interface ChatRepository {
     fun getAllChatPreviewsAsFlow(): Flow<List<ChatPreview>>
 
-    fun getAllMessagesByAccountIdAsFlow(accountId: Long): Flow<List<Message>>
+    fun getAllMessagesByNidAsFlow(Nid: Long): Flow<List<Message>>
 
-    fun getAllMediaMessagesByAccountIdAsFlow(accountId: Long): Flow<List<Message>>
+    fun getAllMediaMessagesByNidAsFlow(Nid: Long): Flow<List<Message>>
 
-    fun getAllMessagesByReceiverAccountId(accountId: Long): List<Message>
+    fun getAllMessagesByReceiverNid(Nid: Long): List<Message>
 
     suspend fun getAllMessages(): List<MessageEntity>
 

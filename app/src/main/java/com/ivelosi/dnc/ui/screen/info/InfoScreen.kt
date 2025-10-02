@@ -69,8 +69,8 @@ import java.io.File
 object InfoDestination : NavigationDestination {
     override val route = "info"
     override val titleRes = R.string.info_screen
-    const val accountIdArg = "accountId"
-    val routeWithArgs = "$route/{$accountIdArg}"
+    const val NidArg = "Nid"
+    val routeWithArgs = "$route/{$NidArg}"
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -126,13 +126,13 @@ fun InfoScreen(
         ) {
             Spacer(modifier = Modifier.height(50.dp))
 
-            // Sezione Immagine del profilo
+
             if (infoState.profile.imageFileName != null) {
                 Image(
                     painter = rememberAsyncImagePainter(model = infoState.profile.imageFileName?.let {
                         File(LocalContext.current.filesDir, it)
                     }),
-                    contentDescription = "Immagine profilo",
+                    contentDescription = "Imagine profile",
                     modifier = Modifier
                         .size(150.dp)
                         .clip(CircleShape),
@@ -142,7 +142,7 @@ fun InfoScreen(
                 Image(
                     painter = painterResource(id = R.drawable.account_circle_24px),
                     colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSurface),
-                    contentDescription = "Immagine di default",
+                    contentDescription = "default",
                     modifier = Modifier
                         .size(150.dp)
                         .clip(CircleShape)

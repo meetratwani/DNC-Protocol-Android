@@ -4,8 +4,8 @@ data class Contact(
     val account: Account,
     val profile: Profile?
 ) : Comparable<Contact> {
-    val accountId: Long
-        get() = account.accountId
+    val Nid: Long
+        get() = account.Nid
 
     val profileUpdateTimestamp: Long
         get() = account.profileUpdateTimestamp
