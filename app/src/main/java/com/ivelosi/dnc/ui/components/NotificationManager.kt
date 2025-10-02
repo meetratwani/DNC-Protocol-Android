@@ -17,8 +17,11 @@ class CallNotificationManager(private val context: Context) {
     companion object {
         const val CHANNEL_ID_CALL = "call_channel"
         const val CHANNEL_ID_INCOMING_CALL = "incoming_call_channel"
+        const val CHANNEL_ID_CHAT = "chat_channel"
+
         const val NOTIFICATION_ID_CALL = 1001
         const val NOTIFICATION_ID_INCOMING_CALL = 1002
+        const val NOTIFICATION_ID_CHAT_BASE = 2000
 
         const val ACTION_ANSWER_CALL = "com.ivelosi.dnc.ANSWER_CALL"
         const val ACTION_DECLINE_CALL = "com.ivelosi.dnc.DECLINE_CALL"
@@ -26,6 +29,7 @@ class CallNotificationManager(private val context: Context) {
 
         const val EXTRA_CALLER_NAME = "caller_name"
         const val EXTRA_CALLER_NID = "caller_nid"
+        const val EXTRA_CONTACT_NID = "contact_nid"
     }
 
     init {
@@ -54,8 +58,20 @@ class CallNotificationManager(private val context: Context) {
                 setSound(null, null)
             }
 
+            // Channel for chat messages
+            val chatChannel = NotificationChannel(
+                CHANNEL_ID_CHAT,
+                "Chat Messages",
+                NotificationManager.IMPORTANCE_HIGH
+            ).apply {
+                description = "Shows notifications for new chat messages"
+                enableVibration(true)
+                enableLights(true)
+            }
+
             notificationManager.createNotificationChannel(callChannel)
             notificationManager.createNotificationChannel(incomingCallChannel)
+            notificationManager.createNotificationChannel(chatChannel)
         }
     }
 
@@ -160,6 +176,57 @@ class CallNotificationManager(private val context: Context) {
         return notification
     }
 
+    fun showChatMessageNotification(
+        contactName: String,
+        messageText: String,
+        contactNid: Long,
+        activityClass: Class<*>,
+        messageCount: Int = 1
+    ) {
+        val intent = Intent(context, activityClass).apply {
+            putExtra(EXTRA_CONTACT_NID, contactNid)
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+        }
+
+        val pendingIntent = PendingIntent.getActivity(
+            context,
+            contactNid.toInt(),
+            intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
+        val notificationBuilder = NotificationCompat.Builder(context, CHANNEL_ID_CHAT)
+            .setSmallIcon(R.drawable.call) // Replace with your chat icon
+            .setContentTitle(contactName)
+            .setContentText(messageText)
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setCategory(NotificationCompat.CATEGORY_MESSAGE)
+            .setAutoCancel(true)
+            .setContentIntent(pendingIntent)
+
+        // Add BigTextStyle for longer messages
+        if (messageText.length > 40) {
+            notificationBuilder.setStyle(
+                NotificationCompat.BigTextStyle()
+                    .bigText(messageText)
+            )
+        }
+
+        // Show message count if multiple messages
+        if (messageCount > 1) {
+            notificationBuilder.setNumber(messageCount)
+        }
+
+        notificationManager.notify(
+            NOTIFICATION_ID_CHAT_BASE + contactNid.toInt(),
+            notificationBuilder.build()
+        )
+    }
+
+    fun cancelChatNotification(contactNid: Long) {
+        notificationManager.cancel(NOTIFICATION_ID_CHAT_BASE + contactNid.toInt())
+    }
+
     fun cancelIncomingCallNotification() {
         notificationManager.cancel(NOTIFICATION_ID_INCOMING_CALL)
     }
@@ -171,5 +238,9 @@ class CallNotificationManager(private val context: Context) {
     fun cancelAllCallNotifications() {
         cancelIncomingCallNotification()
         cancelActiveCallNotification()
+    }
+
+    fun cancelAllNotifications() {
+        notificationManager.cancelAll()
     }
 }
