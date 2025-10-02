@@ -18,6 +18,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -34,6 +35,8 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
 import com.ivelosi.dnc.R
+import com.ivelosi.dnc.data.local.NodeIdentity.nid
+import com.ivelosi.dnc.ui.components.CallNotificationManager
 import com.ivelosi.dnc.ui.navigation.NavigationDestination
 import java.io.File
 
@@ -52,7 +55,34 @@ fun CallScreen(
     navController: NavHostController,
     modifier: Modifier = Modifier
 ) {
+    val context = LocalContext.current
+    val notificationManager = CallNotificationManager(context)
+
     val callResponse by callViewModel.networkManager.callResponse.collectAsState()
+    val callState by callViewModel.uiState.collectAsState()
+
+    // Handle incoming call notification
+    LaunchedEffect(callState.callState) {
+        when(callState.callState) {
+            CallState.RECEIVED_CALL_REQUEST -> {
+                notificationManager.showIncomingCallNotification(
+                    callerName = callState.contact.username ?: "Sconosciuto",
+                    callerNid = nid,
+                    activityClass = context::class.java
+                )
+            }
+            CallState.CALL -> {
+                notificationManager.cancelIncomingCallNotification()
+                notificationManager.showActiveCallNotification(
+                    contactName = callState.contact.username ?: "Sconosciuto",
+                    activityClass = context::class.java
+                )
+            }
+            else -> {
+                // Do nothing for SENT_CALL_REQUEST
+            }
+        }
+    }
 
     LaunchedEffect(callResponse) {
         callResponse?.let {
@@ -60,6 +90,7 @@ fun CallScreen(
                 callViewModel.startCall()
             } else {
                 callViewModel.networkManager.resetCallStateFlows()
+                notificationManager.cancelAllCallNotifications()
                 navController.popBackStack()
             }
         }
@@ -70,11 +101,17 @@ fun CallScreen(
     LaunchedEffect(callEnd) {
         callEnd?.let {
             callViewModel.endCall()
+            notificationManager.cancelAllCallNotifications()
             navController.popBackStack()
         }
     }
 
-    val callState by callViewModel.uiState.collectAsState()
+    // Clean up notifications when leaving screen
+    DisposableEffect(Unit) {
+        onDispose {
+            notificationManager.cancelAllCallNotifications()
+        }
+    }
 
     Column(
         modifier = modifier
@@ -89,7 +126,7 @@ fun CallScreen(
             Image(
                 painter = rememberAsyncImagePainter(model = callState.contact.imageFileName?.let {
                     File(
-                        LocalContext.current.filesDir,
+                        context.filesDir,
                         it
                     )
                 }),
@@ -133,6 +170,7 @@ fun CallScreen(
                         contentDescription = "Metti giù",
                         onClick = {
                             callViewModel.sendCallEnd()
+                            notificationManager.cancelAllCallNotifications()
                             navController.popBackStack()
                         },
                         buttonColor = Color.Red,
@@ -147,6 +185,7 @@ fun CallScreen(
                         onClick = {
                             callViewModel.acceptCall()
                             callViewModel.startCall()
+                            notificationManager.cancelIncomingCallNotification()
                         },
                         buttonColor = Color(0xFF16a34a),
                         iconTintColor = Color.White
@@ -157,6 +196,7 @@ fun CallScreen(
                         contentDescription = "Rifiuta chaiamata",
                         onClick = {
                             callViewModel.declineCall()
+                            notificationManager.cancelAllCallNotifications()
                             navController.popBackStack()
                         },
                         buttonColor = Color.Red,
@@ -185,6 +225,7 @@ fun CallScreen(
                         onClick = {
                             callViewModel.sendCallEnd()
                             callViewModel.endCall()
+                            notificationManager.cancelAllCallNotifications()
                             navController.popBackStack()
                         },
                         buttonColor = Color.Red,
