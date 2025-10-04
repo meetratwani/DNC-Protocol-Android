@@ -1,4 +1,4 @@
-package com.ivelosi.dnc.data
+package com.ivelosi.dnc
 
 import android.content.Context
 import com.ivelosi.dnc.HandlerFactory
@@ -17,6 +17,7 @@ import com.ivelosi.dnc.domain.repository.OwnProfileRepository
 import com.ivelosi.dnc.network.CallManager
 import com.ivelosi.dnc.network.NetworkManager
 import com.ivelosi.dnc.network.wifidirect.WiFiDirectBroadcastReceiver
+import com.ivelosi.dnc.security.E2EEManager
 
 interface AppContainer {
     val context: Context
@@ -29,6 +30,7 @@ interface AppContainer {
     val fileManager: FileManager
     val networkManager: NetworkManager
     val callManager: CallManager
+    var e2eeManager: E2EEManager
 }
 
 class AppDataContainer(activity: MainActivity) : AppContainer {
@@ -65,4 +67,6 @@ class AppDataContainer(activity: MainActivity) : AppContainer {
     override val callManager: CallManager by lazy {
         CallManager(context)
     }
+
+    override lateinit var e2eeManager: E2EEManager
 }
