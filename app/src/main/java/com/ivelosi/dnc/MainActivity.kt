@@ -20,7 +20,7 @@ import com.ivelosi.dnc.domain.repository.OwnAccountRepository
 import com.ivelosi.dnc.domain.repository.OwnProfileRepository
 import com.ivelosi.dnc.network.BackupApi
 import com.ivelosi.dnc.network.NetworkManager
-import com.ivelosi.dnc.ui.DNCProtocol
+import com.ivelosi.dnc.security.E2EEManager
 import com.ivelosi.dnc.ui.DNCProtocol
 import com.ivelosi.dnc.ui.theme.Theme
 import com.ivelosi.dnc.utils.NidGenerator
@@ -35,11 +35,10 @@ class MainActivity : ComponentActivity() {
         addAction(WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION)
     }
 
-
-
     private lateinit var ownAccountRepository: OwnAccountRepository
     private lateinit var ownProfileRepository: OwnProfileRepository
     private lateinit var networkManager: NetworkManager
+    private lateinit var e2eeManager: E2EEManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,6 +52,13 @@ class MainActivity : ComponentActivity() {
         ownProfileRepository = (application as App).container.ownProfileRepository
         networkManager = (application as App).container.networkManager
 
+        // Initialize E2EE Manager
+        e2eeManager = E2EEManager(this)
+        e2eeManager.initialize()
+
+        // Store E2EE manager in container for access throughout the app
+        (application as App).container.e2eeManager = e2eeManager
+
         lifecycleScope.launch {
             if(ownAccountRepository.getAccount().Nid == 0L) {
                 val id = NodeIdentity.nid
@@ -65,6 +71,9 @@ class MainActivity : ComponentActivity() {
             networkManager.startDiscoverPeersHandler()
             networkManager.startSendKeepaliveHandler()
             networkManager.startUpdateConnectedDevicesHandler()
+
+            // Start periodic cleanup of expired sessions
+            startSessionCleanup()
         }
 
         setContent {
@@ -101,6 +110,20 @@ class MainActivity : ComponentActivity() {
     override fun onDestroy() {
         super.onDestroy()
         Log.d("MainActivity", "onDestroy")
+
+        // Clean up sessions on destroy
+        lifecycleScope.launch {
+            e2eeManager.clearAllSessions()
+        }
+    }
+
+    private fun startSessionCleanup() {
+        lifecycleScope.launch {
+            // Clean up expired sessions every hour
+            kotlinx.coroutines.delay(60 * 60 * 1000L)
+            e2eeManager.cleanupExpiredSessions()
+            startSessionCleanup() // Reschedule
+        }
     }
 
     private fun requestPermissions() {
